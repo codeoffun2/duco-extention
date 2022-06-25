@@ -1,6 +1,19 @@
-const extVersion = "1.3";
+const extVersion = "1.4";
 
 // Check for updates
+
+const navbar = `
+  <div class="navbar">
+    <div class="pull-left">
+      <img src="../images/icon.png" class="img-shadow"/>
+    </div>
+    <div class="right">
+      <a href="#!" id="donateBtn">
+        Donate
+      </a>
+    </div>
+  </div>
+`;
 
 getJSON("https://raw.githubusercontent.com/codeoffun2/duco-extention/main/manifest.json").then((data) => {
   let version = data["version"];
@@ -17,7 +30,8 @@ getJSON("https://raw.githubusercontent.com/codeoffun2/duco-extention/main/manife
     newNode.classList.add("text-center");
 
     newNode.innerHTML = `
-      <img src="./images/icon.png" class="img-shadow"/>
+      ${navbar}
+      <img src="../images/icon.png" class="img-shadow"/>
       <h1>Outdated</h1>
       <div class="input-group">
         <p>There is a new version of this extension</p>
@@ -35,9 +49,9 @@ let hashRate = 0;
 let savedUser = undefined;
 
 chrome.storage.local.get(["username"], (items) => {
-    debugger;
     savedUser = items.username
     if (savedUser) {
+      if(newNode.innerHTML.contains("outdated")) return;
       document.querySelector("#username").value = savedUser;
       document.querySelector('button').click();
     } 
@@ -52,7 +66,7 @@ document.querySelector('button').addEventListener("click", () => {
     let username = document.querySelector("#username").value;
     let remember = document.querySelector("#remember");
 
-    getJSON(`https://server.duinocoin.com/users/${username}`).then((data) => {
+    getJSON(`https://server.duinocoin.com/v3/users/${username}`).then((data) => {
       if(data.success == true)
       {
 
@@ -63,16 +77,25 @@ document.querySelector('button').addEventListener("click", () => {
           });
         }
 
-        let balance = data["result"]["balance"].balance.toFixed(6);
+        let balance = data["result"]["balance"].balance.toFixed(4);
 
         document.querySelector(".container").remove();
 
         let myMiners = [];
         let contentjson = {};
+        let transactions = [];
         contentjson = data["result"];
+
+        for (trx in contentjson["transactions"]) {
+          transactions.push(contentjson["transactions"][trx]);
+        }
+
+        transactions.reverse();
+
         for (process in contentjson["miners"]) {
           myMiners.push(contentjson["miners"][process]);
         }
+
         for (miner in myMiners) {
           hashRate = hashRate + myMiners[miner]["hashrate"];
         }
@@ -82,56 +105,81 @@ document.querySelector('button').addEventListener("click", () => {
         let parentDiv = document.querySelector(".footer").parentNode;
         let sp2 = document.querySelector(".footer");
     
+        let transactionsHTML = '';
+
         newNode.classList.add("update");
         newNode.classList.add("container");
         newNode.classList.add("text-center");
-    
+
+        for (trx in transactions) {
+          let transaction = transactions[trx];
+          let negative = false;
+
+          if(transaction.recipient == username) negative = false;
+          else negative = true;
+
+          transactionsHTML += `
+            <a class="transaction" target="_blank" href="https://explorer.duinocoin.com/?search=${transaction.hash}">
+              <div class="pull-left">
+                ${getUserImage(negative ? transaction.recipient : transaction.sender).outerHTML}
+              </div>
+              <div class="pull-right is-column">
+                <div class="is-flex amount ${negative ? "red" : "green"}">${negative ? '-' : '+'}${transaction.amount}</div>
+                <div class="is-flex">${transaction.datetime}</div>
+              </div>
+            </a>
+          `;
+        }
+
         newNode.innerHTML = `
-          ${getUserImage(username).outerHTML}
-          <div class="data">
-            <h2>Balance</h2>
-            <span>
-              ${balance} ᕲ ($ ${(balance * ducoPrice).toFixed(6)})
-            </span>
+          ${navbar}
+          <div class="profile text-left">
+            <div class="profile-cont">
+              <div class="pull-left">
+                ${getUserImage(username).outerHTML}
+              </div>
+              <div class="content">
+                <h2>${username}</h2>
+              </div>
+            </div>
+            <div class="profile-footer">
+              <span class="pull-left">
+                ${balance} ᕲ<br/>
+                ${(balance * ducoPrice).toFixed(2)} USD
+              </span>
+              <span class="pull-right">
+                1 ᕲ ≈ $${ducoPrice}
+              </span>
+            </div>
           </div>
-          <div class="data">
-            <h2>Hashrate</h2>
-            <span>
-            ${calculateHashrate(hashRate)}
-            </span>
-          </div>
-          <div class="data">
-            <h2>Duco Price</h2>
-            <span>
-            1 ᕲ ≈ $${ducoPrice}
-            </span>
+          <div class="transactions">
+            ${transactionsHTML}
           </div>
         `;
+    
+        parentDiv.insertBefore(newNode, sp2);
 
-        let donateBtn = document.createElement("button");
-        donateBtn.innerHTML = "Donate";
-        donateBtn.type = "button";
-        donateBtn.classList.add("btnMargin");
-        donateBtn.onclick = (e) => {
+        let donateBtn = document.getElementById('donateBtn');
+        donateBtn.addEventListener('click', (e) => {
           e.preventDefault();
           document.querySelector(".container").remove();
 
           let newNode = document.createElement("div");
-      
+
           let parentDiv = document.querySelector(".footer").parentNode;
           let sp2 = document.querySelector(".footer");
-      
+
           newNode.classList.add("update");
           newNode.classList.add("container");
           newNode.classList.add("text-center");
-      
+
           newNode.innerHTML = `
-            <div class="data">
+            ${navbar}
+            <div class="btnMargin">
               <h2>Donate to Me</h2>
               <span>
                 Duco Username:<br/>
                 codeoffun<br/>
-                
             </div>
             <a href="https://duinocoin.com/donate" target="_blank">
               <button type="button" class="data">
@@ -141,37 +189,8 @@ document.querySelector('button').addEventListener("click", () => {
           `;
 
           parentDiv.insertBefore(newNode, sp2);
-        }
+        });
 
-        newNode.appendChild(donateBtn);
-    
-        parentDiv.insertBefore(newNode, sp2);
-
-        var checkExist = setInterval(() => {
-          if (document.body.contains(document.getElementById("eth"))) {
-            document.getElementById("btc").onclick = (e) => 
-            {
-              e.preventDefault();
-              var copyText = document.getElementById("btcI");
-
-              copyText.select();
-              copyText.setSelectionRange(0, 99999);
-              document.execCommand("copy");
-              alert("Copied the text: " + copyText.value);
-            };
-            document.getElementById("eth").onclick = (e) => 
-            {
-              e.preventDefault();
-              var copyText = document.getElementById("ethI");
-
-              copyText.select();
-              copyText.setSelectionRange(0, 99999);
-              document.execCommand("copy");
-              alert("Copied the text: " + copyText.value);
-            };
-            clearInterval(checkExist);
-          }
-        }, 100);
       }
       else 
       {
@@ -180,4 +199,3 @@ document.querySelector('button').addEventListener("click", () => {
       }
   });
 });
-

@@ -21,7 +21,7 @@
 
 body {
 	width: 250px;
-	height: 300px;
+	height: 350px;
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -36,6 +36,7 @@ body {
 	-webkit-box-direction: normal;
 	-ms-flex-direction: column;
 	flex-direction: column;
+	font-family: var(--pure-material-font, "Roboto", "Segoe UI", BlinkMacSystemFont, system-ui, -apple-system);
 }
 
 .error {
@@ -67,19 +68,8 @@ body {
 /* Main */
 
 .container {
-	-webkit-box-flex: 1;
-	-ms-flex: 1;
-	flex: 1;
-}
-
-.container h1 {
-	margin-top: 10px;
-}
-
-.container img {
-	display: block;
-	margin: 10px auto;
-	width: 48px;
+	width: 100%;
+	height: calc(100% - 30px);
 }
 
 .footer {
@@ -269,58 +259,128 @@ button:disabled::after {
 	opacity: 0;
 }
 
-/* Donations Styles */
-
-.input-group-copy {
-	margin: 0px auto;
-	position: relative;
-	display: table;
-}
-
-.input-group-copy label {
+.container img {
 	display: block;
-	width: 30px;
-	height: 30px;
-	margin-bottom: 0;
-	border-radius: 100%;
-	background: #ffffff;
-	border: 1px solid transparent;
-	-webkit-box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
-	box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
-	cursor: pointer;
-	font-weight: normal;
-	-webkit-transition: all 0.2s ease-in-out;
-	-o-transition: all 0.2s ease-in-out;
-	transition: all 0.2s ease-in-out;
-	position: absolute;
-	top: -15px;
-	right: -15px;
-	text-align: center;
+	margin: 10px auto;
+	width: 48px;
 }
 
-.input-group-copy label:hover {
-	background: #f1f1f1;
-	border-color: #d6d6d6;
+/* navbar */
+
+.navbar {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	height: 3em;
+	padding: .5em;
 }
 
-.input-group-copy label:after {
-	position: absolute;
+.navbar .right {
+  margin-left: auto;
+}
+
+.navbar a {
+	text-decoration: none;
+	color: black;
+	font-weight: semibold;
+	margin: .5em;
+}
+
+.navbar img {
+	width: 2em;
+}
+
+/* Profile div */
+
+.profile {
+	padding: 1em;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 12em;
+	background: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
+	color: white;
+}
+
+.profile img {
 	display: block;
-	right: 0;
-	bottom: 5.2px;
-	left: 0;
-	margin: auto;
+	width: 48px;
+}
 
-	font-family: "Font Awesome 5 Free" !important;
-	font-weight: 400 !important;
-	content: "\f0c5" !important;
-	color: #757575;
+.profile-cont {
+	display: flex;
+	width: 100%;
+}
+
+.profile .content {
+	padding: 1em;
+	display: flex;
+	align-items: center;
+}
+
+.profile-footer {
+	margin-top: 1em;
+}
+
+.pull-left {
+	float: left;
+}
+
+.pull-right {
+	float: right;	
+}
+
+.text-left {
+	text-align: left;
+}
+
+/* Transactions */
+
+.transactions {
+	width: 100%;
+	height: 12em;
+	overflow-y: scroll;
+}
+
+.transaction {
+	width: 100%;
+	display: flex;
+	color: black;
+	padding: .5em;
+	border-bottom: 1px solid #cccccc;
+	text-decoration: none;
+}
+
+.transaction img {
+	width: 32px;
+}
+
+.is-column {
+	margin: .5em;
+	display: flex;
+	flex-direction: column;
+}
+
+.is-flex {
+	display: flex;
+}
+
+.amount {
+	font-size: 1.2em;
+}
+
+.red {
+	color: red;
+}
+
+.green {
+	color: limegreen;
 }
 
 /* Margins fix */
 
 .btnMargin {
-	margin-top: 20px;
+	margin-top: 5em;
 }
 
 .data {
@@ -400,4 +460,21 @@ input[type='checkbox']:checked + label > span:before{
     border-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
     transform: translate3d(0,-.6em,0) rotate(45deg);
   }
+}
+
+::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar
+{
+	width: 5px;
+	background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb
+{
+	background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
 }

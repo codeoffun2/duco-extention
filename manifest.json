@@ -1,5 +1,5 @@
 {
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"name": "DuinoCoin",
 	"version": "1.3",
 
@@ -8,10 +8,16 @@
 		"128": "icon.png"
 	},
 
-	"browser_action": {
+	"action": {
 		"default_title": "DuinoCoin",
-		"default_popup": "popup.html"
+		"default_popup": "popup/popup.html"
 	},
 
-	"permissions": [ "http://*/*", "https://*/*", "storage" ]
+    "host_permissions": [
+        "*://*/*"
+    ],
+
+	"permissions": [ 
+		"storage" 
+	]
 }

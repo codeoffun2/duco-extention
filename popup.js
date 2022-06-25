@@ -1,4 +1,4 @@
-const extVersion = "1.2";
+const extVersion = "1.3";
 
 // Check for updates
 
@@ -32,17 +32,37 @@ getJSON("https://raw.githubusercontent.com/codeoffun2/duco-extention/main/manife
 let ducoPrice = "0.0";
 let hashRate = 0;
 
+let savedUser = undefined;
+
+chrome.storage.local.get(["username"], (items) => {
+    debugger;
+    savedUser = items.username
+    if (savedUser) {
+      document.querySelector("#username").value = savedUser;
+      document.querySelector('button').click();
+    } 
+});
+
 getJSON("https://server.duinocoin.com/api.json").then((jsonData) => {
   ducoPrice = jsonData["Duco price"];
   ducoPrice = ducoPrice.toFixed(6);
 });
 
 document.querySelector('button').addEventListener("click", () => {
-    let username = document.querySelector("input").value;
-    
+    let username = document.querySelector("#username").value;
+    let remember = document.querySelector("#remember");
+
     getJSON(`https://server.duinocoin.com/users/${username}`).then((data) => {
       if(data.success == true)
       {
+
+        if (remember.checked || savedUser == undefined)
+        {
+          chrome.storage.local.set({ "username": username }, () => {
+            console.log(`User saved successfully -> ${username}`);
+          });
+        }
+
         let balance = data["result"]["balance"].balance.toFixed(6);
 
         document.querySelector(".container").remove();

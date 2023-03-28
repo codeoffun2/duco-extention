@@ -1,5 +1,6 @@
-# DucoExtension (crrently paused development due to lack of time)
+# DucoExtension 
 A chrome extention that allows you to quickly check your duco balance!
+(currently paused development due to lack of time)
 
 how to install:
 1. download the latest release of the extention
